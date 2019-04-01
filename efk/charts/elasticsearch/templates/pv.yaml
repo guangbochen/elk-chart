@@ -1,0 +1,24 @@
+{{- range $i, $v :=  until (int .Values.master.replicas) }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: example-local-pv-{{ $i }}
+spec:
+  capacity:
+    storage: {{ $.Values.master.persistence.size }}
+  accessModes:
+    - {{ $.Values.master.persistence.accessMode | quote }}
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: {{ $.Values.master.persistence.path }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: {{ $.Values.master.persistence.affinityKey }}
+          operator: In
+          values:
+          - {{ $.Values.master.persistence.affinityValue }}-{{ $i }}
+---
+{{- end }}

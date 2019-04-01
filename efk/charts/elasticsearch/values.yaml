@@ -110,8 +110,11 @@ master:
     enabled: false
     accessMode: ReadWriteOnce
     name: data
-    size: "4Gi"
-    # storageClass: "ssd"
+    size: "2Gi"
+    path: /home/kubernetes/efk
+    affinityKey: worker
+    affinityValue: elk
+    storageClass: "local-storage"
   antiAffinity: "soft"
   nodeAffinity: {}
   nodeSelector: {}
