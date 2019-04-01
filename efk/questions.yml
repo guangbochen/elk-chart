@@ -1,0 +1,362 @@
+categories:
+- elasticsearch
+- logging
+questions:
+- variable: defaultImage
+  default: "true"
+  description: "Use default Docker image"
+  label: Use Default Image
+  type: boolean
+  group: "Container Images"
+  show_subquestion_if: false
+  subquestions:
+  - variable: elasticsearch.image.repository
+    default: "docker.elastic.co/elasticsearch/elasticsearch-oss"
+    description: "Elasticsearch image name"
+    type: string
+    label: ElasticSearch Image Name
+  - variable: elasticsearch.image.tag
+    default: "6.5.4"
+    description: "Elasticsearch image tag"
+    type: string
+    label: Elasticsearch Image Tag
+  - variable: kibana.image.repository
+    default: "docker.elastic.co/kibana/kibana-oss"
+    description: "Kibana image name"
+    type: string
+    label: Kibana Image Name
+  - variable: kibana.image.tag
+    default: "6.5.4"
+    description: "Kibana image tag"
+    type: string
+    label: Kibana Image Tag
+  - variable: fluent-bit.image.fluent_bit.repository
+    default: "fluent/fluent-bit"
+    description: "Fluent-Bit image name"
+    type: string
+    label: Fluent-Bit Image Name
+  - variable: fluent-bit.image.fluent_bit.tag
+    default: "1.0.1"
+    description: "Fluent-Bit image tag"
+    type: string
+    label: Fluent-Bit Image Tag
+# elasticsearch master settings
+- variable: elasticsearch.master.replicas
+  default: 3
+  description: "Master node replicas"
+  type: int
+  label: Master Node Replicas
+  required: true
+  group: "Elasticsearch Master"
+  min: 3
+  max: 99
+- variable: elasticsearch.master.resources.requests.memory
+  default: "512Mi"
+  description: "The heapSize of the master node will be equivalent to the requested memory size"
+  type: enum
+  label: Elasticsearch Master Node Requested Memory Size
+  required: true
+  group: "Elasticsearch Master"
+  options:
+  - "512Mi"
+  - "1024Mi"
+  - "1536Mi"
+  - "2Gi"
+  - "3Gi"
+  - "5Gi"
+  - "10Gi"
+  - "20Gi"
+  - "30Gi"
+- variable: elasticsearch.master.persistence.enabled
+  default: false
+  description: "Enable persistent volume for elasticsearch"
+  type: boolean
+  required: true
+  label: Elasticsearch Persistent Volume Enabled of Master Node
+  show_subquestion_if: true
+  group: "Elasticsearch Master"
+  subquestions:
+  - variable: elasticsearch.master.persistence.storageClass
+    default: ""
+    description: "If undefined or set to null, using the default StorageClass. Defaults to null."
+    type: storageclass
+    label: Storage Class for Elasticsearch Master Node
+  - variable: elasticsearch.master.persistence.size
+    default: "4Gi"
+    description: "Elasticsearch persistent volume size"
+    required: true
+    type: string
+    label: Elasticsearch Persistent Volume Size of Master Node
+- variable: elasticsearch.client.replicas
+  default: 2
+  description: "Client node replicas"
+  type: int
+  label: Client Node Replicas
+  required: true
+  group: "Elasticsearch Client"
+  min: 2
+  max: 99
+- variable: elasticsearch.client.resources.requests.memory
+  default: "512Mi"
+  description: "The heapSize of the client node will be equivalent to the requested memory size"
+  type: enum
+  label: Elasticsearch Client Node Requested Memory Size
+  required: true
+  group: "Elasticsearch Client"
+  options:
+  - "512Mi" 
+  - "1024Mi" 
+  - "1536Mi" 
+  - "2Gi"
+  - "3Gi"
+  - "5Gi"
+  - "10Gi"
+  - "20Gi"
+  - "30Gi"
+- variable: elasticsearch.client.service.type
+  default: "ClusterIP"
+  description: "Elasticsearch client service type"
+  type: enum
+  label: Elasticsearch Client Service Type
+  required: true
+  group: "Elasticsearch Client"
+  options:
+  - "ClusterIP"
+  - "NodePort"
+- variable: elasticsearch.data.replicas
+  default: 2
+  description: "Data node replicas"
+  type: int
+  label: Data Node Replicas
+  required: true
+  group: "Elasticsearch Data"
+  min: 2
+  max: 99
+- variable: elasticsearch.data.resources.requests.memory
+  default: "1536Mi"
+  description: "The heapSize of data node will be equivalent to the requested memory size"
+  type: enum
+  label: Elasticsearch Data Node Requested Memory Size
+  required: true
+  group: "Elasticsearch Data"
+  options:
+  - "1536Mi"
+  - "2Gi"
+  - "3Gi"
+  - "5Gi"
+  - "10Gi"
+  - "20Gi"
+  - "30Gi"
+- variable: elasticsearch.data.persistence.enabled
+  default: false
+  description: "Enable persistent volume for elasticsearch"
+  type: boolean
+  required: true
+  label: Elasticsearch Persistent Volume Enabled
+  show_subquestion_if: true
+  group: "Elasticsearch Data"
+  subquestions:
+  - variable: elasticsearch.data.persistence.storageClass
+    default: ""
+    description: "If undefined or set to null, using the default StorageClass. Defaults to null."
+    type: storageclass
+    label: Storage Class for Elasticsearch
+  - variable: elasticsearch.data.persistence.size
+    default: "30Gi"
+    description: "Elasticsearch persistent volume size"
+    required: true
+    type: string
+    label: Elasticsearch Persistent Volume Size
+# kibana settings
+- variable: kibana.ingress.enabled
+  default: true
+  description: "Expose kibana using Layer 7 Load Balancer - ingress"
+  type: boolean
+  group: "Kibana"
+  label: Expose Kibana using Layer 7 Load Balancer
+  show_subquestion_if: true
+  required: true
+  subquestions:
+  - variable: kibana.ingress.hosts[0]
+    default: "xip.io"
+    description: "Kibana server ingress hostname"
+    type: hostname
+    required: true
+    label: Hostname
+- variable: kibana.service.type
+  default: "ClusterIP"
+  description: "Kibana service type"
+  type: enum
+  label: Kibana Service Type
+  required: true
+  group: "Kibana"
+  show_if: "kibana.ingress.enabled=false"
+  options:
+  - "ClusterIP"
+  - "NodePort"
+- variable: kibana.plugins.enabled
+  default: false
+  description: "Install a list of Kibana Plugins"
+  type: boolean
+  group: "Kibana"
+  label: Enabled Kibana Plugins
+  show_subquestion_if: true
+  required: true
+  subquestions:
+  - variable: kibana.plugins.values
+    default: "- elastalert-kibana-plugin,1.0.1,https://github.com/bitsensor/elastalert-kibana-plugin/releases/download/1.0.1/elastalert-kibana-plugin-1.0.1-6.4.2.zip\n- logtrail,0.1.30,https://github.com/sivasamyk/logtrail/releases/download/v0.1.30/logtrail-6.4.2-0.1.30.zip\n- other_plugin"
+    description: "List of plugins to install. Format <pluginName,version,URL> with URLs pointing to zip files of Kibana plugins to install"
+    type: multiline
+    label: Kibana Plugins List
+- variable: kibana.persistence.enabled
+  default: false
+  description: "Enable persistent volume for kibana"
+  type: boolean
+  required: true
+  label: Persistent Volume Enabled for Kibana
+  show_if: "kibana.plugins.enabled=true"
+  show_subquestion_if: true
+  group: "Kibana"
+  subquestions:
+  - variable: kibana.persistence.storageClass
+    default: ""
+    description: "If undefined or set to null, using the default StorageClass. Defaults to null."
+    type: storageclass
+    label: Storage Class for Kibana
+  - variable: kibana.persistence.size
+    default: "5Gi"
+    description: "Kibana persistent volume size"
+    required: true
+    type: string
+    label: Kibana Persistent Volume Size
+  - variable: persistence.existingClaim
+    default: ""
+    description: "If not empty, uses the specified existing PVC instead of creating new one"
+    type: pvc
+    label: Uses Existing Persistent Volume Cliam for LocalStorage
+# fluent-bit settings:
+- variable: fluent-bit.enabled
+  default: true
+  group: "Fluent-Bit"
+  description: "Enable fluent-bit, the Kubernetes log forwarder"
+  type: boolean
+  label: Enable Fluent-Bit
+  required: true
+- variable: fluent-bit.metrics.enabled
+  default: false
+  group: "Fluent-Bit"
+  description: "Specifies whether a service for metrics should be exposed"
+  type: boolean
+  label: Enable Fluent-Bit Metrics
+  show_if: "fluent-bit.enabled=true"
+  required: true
+- variable: fluent-bit.showAdvanced
+  default: false
+  group: "Fluent-Bit"
+  description: "Show Advanced Configurations of fluent-bit"
+  type: boolean
+  label: Show Advanced Fluent-Bit Configurations
+  show_if: "fluent-bit.enabled=true"
+  show_subquestion_if: true
+  subquestions:
+  - variable: fluent-bit.trackOffsets
+    default: false
+    description: "Specify whether to track the file offsets for tailing docker logs. This allows fluent-bit to pick up where it left after pod restarts but requires access to a hostPath"
+    type: boolean
+    label: Enable Fluent-Bit Track Offsets
+  - variable: fluent-bit.backend.type
+    default: "builtin-es"
+    description: "Set the backend to which Fluent-Bit should flush the information it gathers"
+    type: enum
+    label: Select Fluent-Bit Ouput Backend
+    options:
+      - "builtin-es"
+      - "forward"
+      - "elasticsearch"
+      - "splunk"
+# fluentbit forward config
+- variable: fluent-bit.backend.forward.host
+  default: "fluentd"
+  description: "Target host where Fluent-Bit or Fluentd are listening for Forward messages"
+  type: string
+  label: FluentBit Forward Host
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=forward&&fluent-bit.showAdvanced=true"
+  required: true
+- variable: fluent-bit.backend.forward.port
+  default: "24284"
+  description: "TCP Port of the target service"
+  type: string
+  label: Forward Host Port
+  group: "Fluent-Bit"
+  required: true
+  show_if: "fluent-bit.backend.type=forward&&fluent-bit.showAdvanced=true"
+- variable: fluent-bit.backend.forward.shared_key
+  default: ""
+  description: "A key string known by the remote Fluentd used for authorization"
+  type: string
+  label: Forward Backend Shared Key
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=forward&&fluent-bit.showAdvanced=true"
+# elastic config of fluentbit output
+- variable: fluent-bit.backend.es.host
+  default: ""
+  description: "IP address or hostname of the target Elasticsearch instance, e.g. 127.0.0.1"
+  type: string
+  label: Elasticsearch Endpoint
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=custom_elasticsearch&&fluent-bit.showAdvanced=true"
+  required: true
+- variable: fluent-bit.backend.es.port
+  default: "9200"
+  description: "TCP port of the target Elasticsearch instance"
+  type: string
+  label: Elasticsearch Endpoint Port
+  required: true
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=custom_elasticsearch&&fluent-bit.showAdvanced=true"
+- variable: fluent-bit.backend.es.index
+  default: "kubernetes_cluster"
+  description: "Index Name"
+  type: string
+  label: Elasticsearch Index Name
+  required: true
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=custom_elasticsearch&&fluent-bit.showAdvanced=true"
+- variable: fluent-bit.backend.es.logstash_prefix
+  default: "%Y.%m.%d"
+  description: "Time format (based on strftime) to generate the second part of the Index name"
+  type: enum
+  label: Elasticsearch Logstash Dateformat
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=custom_elasticsearch&&fluent-bit.showAdvanced=true"
+  required: true
+  options:
+    - "%Y.%m.%d"
+    - "%Y.%m."
+    - "%Y."
+# splunk config of fluentbit
+- variable: fluent-bit.backend.splunk.host
+  default: "127.0.0.1"
+  description: "IP address or hostname of the target Splunk service"
+  type: string
+  label: Splunk Endpoint
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=splunk&&fluent-bit.showAdvanced=true"
+  required: true
+- variable: fluent-bit.backend.splunk.port
+  default: "8088"
+  description: "TCP port of the target Splunk service"
+  type: string
+  label: Splunk Endpoint Port
+  required: true
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=splunk&&fluent-bit.showAdvanced=true"
+- variable: fluent-bit.backend.splunk.token
+  default: "kubernetes_cluster"
+  description: "Specify the Authentication Token for the HTTP Event Collector interface"
+  type: string
+  label: Splunk Authentication Token
+  required: true
+  group: "Fluent-Bit"
+  show_if: "fluent-bit.backend.type=splunk&&fluent-bit.showAdvanced=true"

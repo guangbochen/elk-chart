@@ -1,0 +1,18 @@
+3. fluent-bit is now running.
+
+{{- if eq .Values.backend.type "forward" }}
+
+It will forward all container logs to the svc named {{ .Values.backend.forward.host }} on port: {{ .Values.backend.forward.port }}
+{{- else if eq .Values.backend.type "builtin-es" }}
+
+It will forward all container logs to the built-in elasticsearch svc named {{ .Release.Name }}-elasticsearch-client.{{ .Release.Namespace }}.svc.cluster.local on port: 9200
+{{- else if eq .Values.backend.type "elasticsearch" }}
+
+It will forward all container logs to the svc named {{ .Values.backend.es.host }} on port: {{ .Values.backend.es.port }}
+{{- else if eq .Values.backend.type "http" }}
+
+It will forward all container logs to the svc named {{ .Values.backend.http.host }} on port: {{ .Values.backend.http.port }}
+{{- else if eq .Values.backend.type "splunk" }}
+
+It will forward all container logs to the svc named {{ .Values.backend.splunk.host }} on port: {{ .Values.backend.splunk.port }}
+{{- end }}
