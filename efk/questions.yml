@@ -79,7 +79,7 @@ questions:
   - variable: elasticsearch.master.persistence.storageClass
     default: "local-storage"
     description: "If undefined or set to null, using the default StorageClass. Defaults to null."
-    type: storageclass
+    type: string
     label: Storage Class for Elasticsearch Master Node
   - variable: elasticsearch.master.persistence.size
     default: "4Gi"
