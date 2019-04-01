@@ -111,7 +111,7 @@ master:
     accessMode: ReadWriteOnce
     name: data
     size: "2Gi"
-    path: /home/ubuntu/efk
+    path: /mnt/disks/efk
     affinityKey: worker
     affinityValue: elk
     storageClass: "local-storage"
