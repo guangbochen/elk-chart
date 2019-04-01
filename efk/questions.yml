@@ -68,7 +68,7 @@ questions:
   - "20Gi"
   - "30Gi"
 - variable: elasticsearch.master.persistence.enabled
-  default: false
+  default: true
   description: "Enable persistent volume for elasticsearch"
   type: boolean
   required: true
@@ -77,7 +77,7 @@ questions:
   group: "Elasticsearch Master"
   subquestions:
   - variable: elasticsearch.master.persistence.storageClass
-    default: ""
+    default: "local-storage"
     description: "If undefined or set to null, using the default StorageClass. Defaults to null."
     type: storageclass
     label: Storage Class for Elasticsearch Master Node
