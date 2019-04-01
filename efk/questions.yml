@@ -204,7 +204,7 @@ questions:
   required: true
   subquestions:
   - variable: kibana.plugins.values
-    default: "- elastalert-kibana-plugin,1.0.1,https://github.com/bitsensor/elastalert-kibana-plugin/releases/download/1.0.1/elastalert-kibana-plugin-1.0.1-6.4.2.zip\n- logtrail,0.1.30,https://github.com/sivasamyk/logtrail/releases/download/v0.1.30/logtrail-6.4.2-0.1.30.zip\n- other_plugin"
+    default: ""
     description: "List of plugins to install. Format <pluginName,version,URL> with URLs pointing to zip files of Kibana plugins to install"
     type: multiline
     label: Kibana Plugins List
