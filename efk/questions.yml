@@ -169,7 +169,7 @@ questions:
     label: Elasticsearch Persistent Volume Size
 # kibana settings
 - variable: kibana.ingress.enabled
-  default: true
+  default: false
   description: "Expose kibana using Layer 7 Load Balancer - ingress"
   type: boolean
   group: "Kibana"
@@ -184,7 +184,7 @@ questions:
     required: true
     label: Hostname
 - variable: kibana.service.type
-  default: "ClusterIP"
+  default: "NodePort"
   description: "Kibana service type"
   type: enum
   label: Kibana Service Type
